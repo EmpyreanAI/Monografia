@@ -7,15 +7,19 @@
 %  - Pós-graduação: [qualificacao], mestrado|doutorado, ppca|ppginf
 
 \documentclass[bacharelado]{UnB-CIC}%
+
 % \documentclass[qualificacao,mestrado,ppca]{UnB-CIC}%
-
 \usepackage{pdfpages}% incluir PDFs, usado no apêndice
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
+\newcommand{\R}{\mathbb{R}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Informações do Trabalho
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\orientador{\prof \dr Geraldo P. R. Filho}{CIC/UnB}%
+\orientador{\prof \dr Geraldo P. Rocha Filho}{CIC/UnB}%
 %\coorientador{\prof \dr José Ralha}{CIC/UnB}
 \coordenador{\prof \dr Edison Ishikawa}{Bibliothèque universelle de Genève}%
 \diamesano{24}{dezembro}{2020}%
@@ -33,19 +37,20 @@
 
 \newcommand{\unbcic}{\texttt{UnB-CIC}}%
 
+%\incluilistadesimbolos
+
+%\incluilistadefiguras
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Texto
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}%
     \capitulo{1_Introducao}{Introdução}%
-    \capitulo{2_UnB-CIC}{A Classe \unbcic}%
-    % \capitulo{2_Fund_Teo}{Fundamentação Teórica}
-    \capitulo{3_TCC}{Trabalho de Conclusão de Curso}%
-    % \capitulo{3_Desenvolvimento}{Desenvolvimento}
-    \capitulo{4_Apresentacao}{Apresentações}%
-    % \capitulo{4_Resultados}{Resultados Experimentais}
-    % \capitulo{5_Conclusao}{Conclusão}
-
-    \apendice{Apendice_Fichamento}{Fichamento de Artigo Científico}%
-    \anexo{Anexo1}{Documentação Original \unbcic\ (parcial)}%
-\end{document}%
+    \capitulo{2_Fund_Teo}{Fundamentação Teórica}
+    \capitulo{3_TrabRel}{Trabalhos Relacionados}%
+    \capitulo{4_Desenvolvimento}{Desenvolvimento}
+    \capitulo{5_Resultados}{Resultados Experimentais}
+    \capitulo{6_Conclusao}{Conclusão}
+    % \apendice{Apendice_Fichamento}{Fichamento de Artigo Científico}%
+    % \anexo{Anexo1}{Documentação Original \unbcic\ (parcial)}%
+\end{document}

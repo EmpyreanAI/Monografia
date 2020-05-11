@@ -19,6 +19,7 @@
 %%
 \RequirePackage{xkeyval}
 
+
 %espaçamento de linhas
 \newif\if@singlespacing
 \newif\if@onehalfspacing
@@ -137,9 +138,10 @@
 %% --- Pacotes requeridos ---
 %%
 
-
+\RequirePackage[style=numeric,sorting=none]{biblatex}
+\addbibresource{bibliografia.bib}
 \RequirePackage[brazil,american]{babel}% Idiomas
-\RequirePackage[fixlanguage]{babelbib}%  Idioma das referências
+% \RequirePackage[fixlanguage]{babelbib}%  Idioma das referências
 \RequirePackage[utf8]{inputenc}%         Arquivos na codificação UTF-8
 \RequirePackage[T1]{fontenc}%            Habilita busca com caracteres latinos
 \RequirePackage{lmodern}%                Habilita busca com caracteres latinos
@@ -169,13 +171,14 @@
 	\RequirePackage{setspace}
 \fi
 
-\PassOptionsToPackage{pdfdisplaydoctitle=true,pagebackref,linktocpage=true}{hyperref}%
+\PassOptionsToPackage{pdfdisplaydoctitle=true,linktocpage=true}{hyperref}% removed pagebackref
 
 \if@LoadHyperref
 	\RequirePackage[hidelinks]{hyperref}%
 \fi
-
+    
 \usepackage[acronym,nonumberlist]{glossaries}% Após o hyperref!
+
 \makeglossaries%
 
 \usepackage[tocindentauto]{tocstyle}% Indentação de anexos na TOC
@@ -292,13 +295,13 @@
 }
 
 %configura a seção de referências
-\expandafter\let\expandafter\@bibliography\csname bibliography\endcsname%
-\renewcommand{\bibliography}[1]{%
-	%renomeia a seção após influência maligna do Babel
-	\renewcommand*{\bibname}
-		{\@ifundefined{XeTeXversion}{Refer\^encias}{Referências}}
-	\addtocchapter{\bibname}
-	\singlespacing\@bibliography{#1}\defaultspacing}
+% \expandafter\let\expandafter\@bibliography\csname bibliography\endcsname%
+% \renewcommand{\bibliography}[1]{%
+% 	%renomeia a seção após influência maligna do Babel
+% 	\renewcommand*{\bibname}
+% 		{\@ifundefined{XeTeXversion}{Refer\^encias}{Referências}}
+% 	\addtocchapter{\bibname}
+% 	\singlespacing\@bibliography{#1}\defaultspacing}
 
 %maketitle para gerar as páginas iniciais
 \def\maketitle{%
@@ -713,10 +716,6 @@
             pdfauthor=\@author,
             pdfsubject=\@assunto,
             pdfkeywords=\@palavraschave}
-		\@ifpackageloaded{natbib}{
-			%compatibilidade entre natbib e hyperref
-		\RequirePackage{hypernat}
-		}{}
 		%posiciona melhor os links para captions
         \RequirePackage[all]{hypcap}
 	}{
@@ -764,6 +763,7 @@
 			\renewcommand*{\glsnumbersgroupname}{Números}}
 		}
 	}{}
+
 
 	\@ifundefined{XeTeXversion}%
 	{%suporte para fonte Adobe Minion Pro - pacote LaTeX
@@ -903,22 +903,23 @@
 	\selectlanguage{american}%
 	\@IncluirSecao{abstract}%
 	\selectlanguage{brazil}%
-    \selectbiblanguage{brazil}%
+    % \selectbiblanguage{brazil}%
 	\@erroSeNaoExiste{bibliografia.bib}%
 
 	\tableofcontents%
 	\iftotalfigures\listoffigures\fi%
 	\iftotaltables\listoftables\fi%
 	\@listofacronyms%
-
+	
 	\textual%
 }%
 
 \newcommand{\@conteudoPosTextual}{%
 	\@PosTextualNaoInclusofalse%
     \postextual%
-	\bibliographystyle{babunsrt}%
-    \bibliography{bibliografia}%
+    \printbibliography
+% 	\bibliographystyle{babunsrt}%
+    % \bibliography{bibliografia}%
 }%
 
 
