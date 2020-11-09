@@ -13,6 +13,14 @@
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{icomma}
+
+\AtBeginEnvironment{quote}{\singlespace\vspace{-\topsep}\small}
+\AtEndEnvironment{quote}{\vspace{-\topsep}\endsinglespace}
 
 \newcommand{\R}{\mathbb{R}}
 
@@ -21,19 +29,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \orientador{\prof \dr Geraldo P. Rocha Filho}{CIC/UnB}%
 %\coorientador{\prof \dr José Ralha}{CIC/UnB}
-\coordenador{\prof \dr Edison Ishikawa}{Bibliothèque universelle de Genève}%
-\diamesano{24}{dezembro}{2020}%
+\coordenador{\prof \dr Marcelo Grandi Mandelli}{CIC/UnB}%
+\diamesano{19}{Novembro}{2020}%
 
-\membrobanca{\prof \dr Donald Knuth}{Stanford University}%
-\membrobanca{\dr Leslie Lamport}{Microsoft Research}%
+\membrobanca{\prof \dr Guilherme N. Ramos}{CIC/UnB}%
+\membrobanca{\prof \dr Luís P. F. Garcia}{CIC/UnB}%
 
 \autor{Khalil C.}{do Nascimento}
 \coautor{Renato A.}{Nobre}%
 
-\titulo{UnB-CIC: Uma classe em LaTeX para textos do Departamento de Ciência da Computação}%
+\titulo{Hare: Serviço de investimento baseado em agentes autônomos para operar na B3}%
 
-\palavraschave{LaTeX, metodologia científica, trabalho de conclusão de curso}%
-\keywords{LaTeX, scientific method, thesis}%
+\palavraschave{séries temporais, computação financeira, predição de mercado, long short-term memory, redes neurais recorrentes, aprendizado por reforço profundo, deep deterministic policy gradient}%
+
+\keywords{time series, financial computing, market prediction, long short-term meomry, recurrent neural networks, deep reinforcement learning, deep deterministic policy gradient}%
 
 \newcommand{\unbcic}{\texttt{UnB-CIC}}%
 
@@ -47,10 +56,11 @@
 \begin{document}%
     \capitulo{1_Introducao}{Introdução}%
     \capitulo{2_Fund_Teo}{Fundamentação Teórica}
-    \capitulo{3_TrabRel}{Trabalhos Relacionados}%
-    \capitulo{4_Desenvolvimento}{Desenvolvimento}
+    \capitulo{3_TrabRel}{Trabalhos Relacionados}
+    \capitulo{4_Desenvolvimento}{Hare: Um Serviço Autônomo de Investimentos}
     \capitulo{5_Resultados}{Resultados Experimentais}
     \capitulo{6_Conclusao}{Conclusão}
-    % \apendice{Apendice_Fichamento}{Fichamento de Artigo Científico}%
+    \apendice{Apendice_Individuais}{Análise detalhada dos experimentos individuais de cada ativo}%
+    \apendice{Apendice_Extra}{Experimento extra com o Módulo de Gerenciamento de Riscos}%
     % \anexo{Anexo1}{Documentação Original \unbcic\ (parcial)}%
 \end{document}

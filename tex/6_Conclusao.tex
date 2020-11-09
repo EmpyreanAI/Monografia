@@ -1,0 +1,32 @@
+\label{cap_conc}
+
+
+% Contextualizar o problema
+Durante o desenvolvimento deste trabalho, ficou claro que os mercados de ações representam um papel importante na economia, e oferece oportunidades para empresas e corporações crescerem e investidores gerarem rentabilidade em seus ativos financeiros. Complementarmente, a complexidade, volatilidade, e oportunidades de gerar lucros investindo no mercado financeiro, vêm criando um interesse crescente na comunidade acadêmica. No entanto, prever o movimento de um dado ativo no mercado não é uma tarefa trivial, é necessário correlacionar análises técnicas e fundamentais para conseguir previsões suficientes para negociar os ativos com segurança em um mercado de ações desejado. 
+
+% Resumir o que foi feito
+Diante desse cenário, este trabalho propôs o Hare como um novo serviço de investimento. O Hare divide a complexidade do mercado em subtarefas e oferece um serviço confiável baseado em análises técnicas e fundamentais para negociar ativos na bolsa de valores com alta precisão e estabilidade. Sua metodologia consiste na aplicação de modelos de aprendizagem para classificar quando uma ação vai ganhar ou perder valor, e posteriormente, aprender a utilizar essa informação para descobrir qual é o momento ideal de realizar uma compra ou uma venda.
+
+
+% Resumir Resultados obtidos
+Sua metodologia é validada por meio de uma série de experimentos para avaliar cada módulo racional do Hare individualmente. Desta forma o roteiro experimental consegue avaliar todo o processo de investimento realizado pelo Hare. Seu \acrshort{MPM} é validado com uma série de processos, cuidando da otimização de hiper-parâmetros por métodos Bayesianos, treinamento dos modelos e obtenção de métricas, e comparação com modelos de aprendizado tradicionais. Posteriormente, o \acrshort{MAR} é validado em comparativo com investimentos de renda fixa tradicionais e modelos de alocações de portfólios da teoria moderna.
+
+
+Como prova de conceito, o Hare foi projetado para operar na bolsa de valores B3, a bolsa Brasileira. O portfólio considerado possui ativos de 3 grandes empresas brasileiras: Petrobras (PETR3), Ambev (ABEV3) e Vale S.A. (VALE3). O roteiro experimental criado focou em validar o Hare em duas etapas: (i) validação do \acrshort{MPM}; e (ii) validação do \acrfull{MAR}. Desta forma o roteiro experimental consegue avaliar todo o processo de investimento realizado pelo Hare, os seguintes resultados obtidos destacam-se:
+\begin{itemize}
+    \item O \acrshort{MPM} obteve em seus modelos uma acurácia de $82\%$ para ABEV3, $92\%$ para PETR3 e $94\%$ para VALE3, se destacando em relação a outros modelos comparativos.
+    \item O modelo de alocação de recursos é capaz, em certo nível, de obter lucros em ativos individuais, e em um portfólio completo, no qual obteve uma rentabilidade de $11,74\%$ no semestre avaliado. Resultados demonstram rentabilidades maiores que investimentos de renda fixa e de portfólios criados utilizando a \acrlong{VMM}.
+\end{itemize}
+
+
+Esses resultados corroboram a hipótese de que é possível criar um serviço capaz de investir na bolsa de valores com precisão e estabilidade em suas predições e rentabilidade em seus investimentos.
+
+
+\section{Trabalhos Futuros}
+
+
+No decorrer do desenvolvimento desta pesquisa, principalmente durante os resultados, surgiram novas ideias que podem ser desenvolvidas para melhorar o Hare, bem como outras pesquisar para nortear futuros projetos na área de mercado financeiro, sendo eles: utilização de mais valores de entrada para o modelo \acrshort{LSTM}, criação de um modelo inteligente para o \acrshort{MGR}, hiper-parametrização do \acrshort{DDPG} utilizando o Hyperopts, estudo de reformulações do ambiente da B3, e estudo dos motivos nos quais o \acrshort{DDPG} não converge para políticas mais lucrativas. 
+
+Acredita-se também que um experimento possa ser realizado discreteando o espaço de ações e transformando o modelo para uma \emph{Deep Q-Network}. É possível que a utilização de ações continuas seja desnecessária para o ambiente formulado. 
+
+Experimentos futuros também podem levar em consideração a utilização de taxas de transações como um fator que altera o lucro e a recompensa do agente. Além de se recomendar também uma experimentação no semestre ou anos seguintes.

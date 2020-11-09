@@ -1,0 +1,16 @@
+\tabela{Parâmetros utilizados no treinamento do \acrshort{DDPG}}{tab:ddpg_params}{|l|l|}{
+\hline
+\textbf{Parâmetro}                     & \multicolumn{1}{c|}{\textbf{Valor Selecionado}} \\ \hline
+Épocas                                 & 200                                             \\ \hline
+Passos por Época                       & 1000                                            \\ \hline
+Taxa de Aprendizagem da Política       & 0.0005                                          \\ \hline
+Taxa de Aprendizagem do Q-Valor        & 0.0001                                          \\ \hline
+Buffer de Repetição                    & 500.000                                         \\ \hline
+Batch Size                             & 100                                             \\ \hline
+Passos Iniciais                        & 10                                              \\ \hline
+Ruído                                  & 1.0                                             \\ \hline
+Tamanho da Camada Escondida            & (16, 16)                                        \\ \hline
+Função de Ativação da Camada Escondida & ReLU                                            \\ \hline
+Função de Ativação da Saída            & Tanh                                            \\ \hline
+Episódios de Teste                     & 10                                              \\ \hline
+}

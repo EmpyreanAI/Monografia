@@ -1,0 +1,119 @@
+\label{cap_dev}
+
+Neste capitulo, é apresentado o serviço proposto para negociar na bolsa de valores, sendo o foco da implementação o investimento autônomo, racional e baseado em agentes. Denominado de Hare, o serviço trata diversos aspectos do processo de investimento de forma modular, em que cada módulo é responsável por uma tarefa específica, sendo as principais: predição de movimento do valor de ativos, controle de riscos de ativos, e gerenciamento de recursos de um portfólio. 
+
+\section{O Serviço Hare}
+\label{SEC:SYSTEM}
+
+Seguindo a lógica de raciocínio apresentada no Capítulo \ref{cap:rwork}, buscou-se uma abordagem que preenche os aspectos citados como lacunas existentes nos trabalhos relacionados. Portanto, o Hare utiliza séries temporais de dados históricos de ativos da B3, e múltiplas variáveis de análise fundamental em seu processo de investimento. As séries temporais utilizam ativos, tais como PETR3, VALE3, e ABEV3, para predizer o valor deste ativo no dia seguinte. Enquanto as variáveis fundamentais (como análise de volume de pesquisa no \emph{Google}, variáveis macroeconômicas, e índices de mercados internacionais), observam pela existência de possíveis riscos no ativo. Todas essas informações são posteriormente utilizadas para gerenciar os recursos do investidor em seu portfólio.
+
+O Hare é descrito utilizando uma estratégia, na qual apresenta-se, primeiramente, os conceitos relativos aos módulos internos que servirão de base para o entendimento dos módulos externos e da estrutura do Hare como um todo. Com esse propósito, uma visão geral do funcionamento do Hare e de suas tecnologias inerentes é apresentado na Seção \ref{SEC:OVERVIEW}. Seguindo com o desenvolvimento de suas estruturas internas: o \acrlong{MPM}, na Seção \ref{SEC:INSIDERS}; e o \acrlong{MGR} na Seção \ref{SEC:RMS}. E finalizando no Módulo do Agente na Seção \ref{SEC:AGENT}, no qual é pormenorizado como o agente é responsável na realização de ações racionais para gerenciar os recursos do seu portfólio.
+
+
+\section{Visão Geral}
+\label{SEC:OVERVIEW}
+
+A visão geral do funcionamento do serviço disponibilizado pelo Hare é ilustrada na \refFig{fig:hare}. O Hare possui dois módulos racionais principais: o \acrfull{MPM} e o Módulo do Agente. O \acrshort{MPM}, especializado para um dado ativo, é responsável por indicar se o valor do ativo estudado vai aumentar ou diminuir no próximo dia, dada a série histórica de valores do mesmo. Essa predição é então utilizada pelo agente, junto com a probabilidade de um possível risco para decidir se é mais rentável manter o ativo, comprar mais cotas, ou liquidá-lo. Este processo é realizado para cada ativo que o agente possui em seu portfólio, visando assim, não somente o maior lucro possível de uma só ação, como do portfólio como um todo
+
+\figura[ht]{img/hare.pdf}{Cenário Operacional do Serviço Hare}{fig:hare}{width=0.8\linewidth}%
+
+O Hare é projetado para funcionar com bases de dados técnicas e fundamentais, representados respectivamente pelos rótulos A e B da \refFig{fig:hare}. As informações de dados técnicos, tais como o preço do ativo, são utilizadas como entradas para o \acrshort{MPM}, o qual é responsável por realizar as predições de movimento para seu ativo especializado. Adicionalmente, os dados de análises fundamentais, como informações do \emph{Google Trends} ou dados de relatórios trimestrais da empresa, são responsáveis por alimentar o \acrfull{MGR} (como visto na \refFig{fig:hare} rótulo D). O \acrshort{MGR} tem a função de descobrir, com os dados das variáveis fundamentais, problemas e riscos em tempo real com as ações no portfólio do usuário. A saída de ambos esses módulos, \acrshort{MPM} e \acrshort{MGR}, são utilizadas como entrada para o \acrfull{MAR} (\refFig{fig:hare} rótulo E). O \acrfull{MAR} é responsável por decidir que ações vão ser vendidas, mantidas ou compradas, além de decidir também as quantidades dos recursos que serão alocados no caso de uma compra. Após o \acrshort{MAR} tomar as decisões, cabe ao agente (\refFig{fig:hare} rótulo C) agir com base nelas. As ações são realizadas então por uma série de requisições para a API da corretora desejada (\refFig{fig:hare} rótulo F).
+
+Para realizar esse processo na prática, o Hare foi projetado\footnote{Disponível em: \url{https://github.com/EmpyreanAI}} usando a linguagem de programação Python 3\footnote{Disponível em: \url{https://www.python.org}} em conjunto com os pacotes \textit{Pandas}\footnote{Disponível em: \url{https://pandas.pydata.org}}, \textit{Keras}\footnote{Disponível em: \url{https://keras.io}}, \textit{Gym}\footnote{Disponível em: \url{https://gym.openai.com}} e \textit{Spinning Up}\footnote{Disponível em: \url{https://spinningup.openai.com}}.
+O \textit{Pandas} foi utilizado para leitura e processamento de dados; o  \textit{Keras}, com seu processo interno do \textit{Tensor Flow}, foi utilizado para projetar os modelos de aprendizado supervisionado; o \textit{Gym} utilizado para criar o ambiente o qual o agente interage durante o aprendizado por reforço; e por fim, o \textit{Spinning Up} para implementar os algoritmos de aprendizado por reforço profundo. Para entender melhor cada aspecto do Hare, os seus três módulos são detalhados nas Seções seguintes: \acrlong{MPM} na Seção \ref{SEC:INSIDERS}, \acrshort{MGR} na Seção \ref{SEC:RMS} e Módulo do Agente na Seção \ref{SEC:AGENT}.
+
+\section{Módulo de Predição}
+\label{SEC:INSIDERS}
+
+Um dos principais módulos racionais do Hare é o \acrfull{MPM}. Sua tarefa é prever informações de movimento de um determinado ativo, baseando-se nos dados históricos do mesmo. Além de dar suporte para que módulo do agente possa realizar suas decisões. Cada \acrshort{MPM} é uma entidade individual especializada em uma dada ação, programável para utilizar qualquer modelo de aprendizado desejado. 
+
+As unidades de predição, apresentadas na \refFig{fig:insider}, coletam seus dados da base da bolsa de valores, com diversos campos de informações sobre as ações. Nestes dados, múltiplas informações estão disponíveis para serem usadas como entrada do modelo, tais como: preço de abertura, preço de fechamento, e volume. Qualquer um desses pode ser utilizado como valor de entrada para alimentar o modelo de aprendizado, e uma predição é criada como resultado. Por uma visão holística, este trabalho utiliza o preço de fechamento, que é condizente com o final do pregão\footnote{Nos pregões, tipicamente, os compradores e vendedores possuem as melhores oportunidades nos preços dos ativos.}. Tal predição toma a forma de um valor binário, onde $1$ indica um aumento e $0$ uma diminuição do valor da ação.
+
+Com o objetivo de realizar as predições das ações, os módulos de predição do Hare foram modelados por meio de uma rede \acrshort{LSTM}, uma variação da \acrshort{RNN} utilizando técnicas de portões. As redes \acrshort{RNN}s baseadas em portões foram modeladas no Hare com o propósito de conseguir criar caminhos pelo tempo que possuem deriváveis que não somem nem explodem ao longo do tempo \cite{deep_learning}. Graças a esse mecanismo, redes \acrshort{LSTM} são capazes de decidir quais informações vão ser mantidas ou esquecidas, visando aumentar a acurácia do processo de tomada de decisão. A \refFig{fig:insider} apresenta o \acrlong{MPM}, e sua versão implementada.
+
+\figura[htbp]{img/Insider_pt.pdf}{Visão Geral do \acrlong{MPM}. O modelo preditor escolhido pode ser alterado por qualquer modelo de aprendizado desejado}{fig:insider}{width=0.8\linewidth}%
+
+A rede \acrshort{LSTM} foi escolhida por possuir uma arquitetura distinta, que permite ser utilizada para predição de dados temporais. Além de ser o modelo de processamento sequencial mais efetivo \cite{deep_learning}, a LSTM demostrou resultados substanciais ao analisar correlações de longo prazo. O uso de tal modelo baseado em portões no Hare supera as dificuldades da \acrshort{RNN} de aprender dependências de longo prazo \cite{lstm}, adereçando o problema de predição de movimento de ações da bolsa de valores com uma abordagem viável.
+
+Os dados de entrada que alimentam o modelo são a série histórica de um determinado ativo. A entrada $x_t$ de uma célula \acrshort{LSTM} é um vetor de três dimensões, com o formato $x_t = \langle \textrm{batch size, passo, características} \rangle$. O \emph{batch size} define o número de amostrar que vão ser propagadas pela rede; os passos representam quanto tempo cada uma das amostras representa; e finalmente, as características são os números de dimensões de informações que são passados para o modelo a cada passo. Tais informações são cruciais para o aprendizado. O Hare, representa cada passo como um dia útil de mercado. Exemplificando, se o tamanho da entrada consiste de $12$ passos com um \emph{batch size} de $32$ e uma única característica sendo o preço de fechamento, então a entrada consiste de $32$ amostras de preço de fechamento dos últimos $12$ dias.
+
+O Hare utiliza uma LSTM considerando múltiplas unidades (revisite a \refFig{fig:insider}). Realizando isso, a \acrshort{LSTM} consiste de $n$ cópias dela mesma, cada cópia terá uma estrutura idêntica, mas inicializada com valores de pesos diferentes e, portanto computando de forma diferente. Ao utilizar $n$ unidades, a camada de \acrshort{LSTM} vai produzir $n$ saídas, necessitando assim de mecanismos para tradução dessas $n$ saídas para um valor preditivo. Aderençando essa situação, uma camada de rede neural densamente conectada, ou camada densa, foi adicionada no final do modelo. 
+
+Realizando-se o cálculo da camada densa, um valor binário é informado como saída para cada passo de tempo, este valor é a predição. Após essa predição ser feita, seu valor é utilizado como entrada para o \acrshort{MGR}, o qual é então responsável por realizar as decisões mais lucrativas. 
+
+No entanto, dada a complexidade do mercado e sua volatilidade à eventos externos, a análise das séries temporais por si só, pode não ser o suficiente para prever algumas anomalias. Para superar essa limitação, o agente é providenciado com um módulo de detecção de distúrbios.
+
+
+\section{Módulo de Gerenciamento de Riscos}
+\label{SEC:RMS}
+
+O uso de séries temporais de ações no mercado pode ser capaz de identificar previsões promissoras, mas não é o suficiente para se criar modelos robustos. Com o objetivo de tratar a volatilidade do mercado em relação a influências externas, adicionou-se o \acrfull{MGR} no sistema Hare. O \acrshort{MGR} tem como tarefa principal estudar múltiplas fontes de variáveis fundamentais, com o objetivo de refletir a situação atual de um ativo. 
+
+A combinação de diversas técnicas de análise da bolsa, utilizando diversas bases de dados, tais como as séries temporais de preço das ações e o volume de consultas de pesquisa no \emph{Google}, pode abrir novos horizontes sobre diferentes estágios do processo de tomada de decisão \cite{google_trends}. O uso das consultas de pesquisa permite, por exemplo, a possibilidade de realizar uma análise de sentimento de um dado ativo, ou de áreas relacionadas a ele, visto que o volume de pesquisa reflete o sentimento de um grupo em relação a aquilo sendo pesquisado. A abordagem de \textcite{google_trends} tem como premissa que um aumento no volume de consultas é relacionado com um risco no ativo. Ademais, \textcite{bib2} afirmam que os volumes de consultas antecipam, em muitos casos, picos de negociação por um dia ou mais. Esta informação pode ser usada no Hare como uma das entradas do modelo, como um possível indicativo de um risco. 
+
+Não obstante, outra entrada que pode ser inserida no Hare, é a de dados extraídos de notícias e relatórios de desempenho das empresas dos ativos. Pelas notícias afetarem as decisões humanas e a volatilidade dos preços das ações ser resultado das transações financeiras, é razoável assumir que tais eventos podem influenciar o mercado financeiro \cite{structured_events}. \textcite{financial_news, structured_events, clustering_report} estudam diferentes métodos de extração de características que podem ser utilizadas para extrair dados de notícias e relatórios. O serviço do Hare não realiza tal extração de características, e espera em sua entrada somente dados tratados. Características como eficiência da empresa, melhorias, crescimento, lucro, fluxo de caixa, podem ser utilizadas para alimentar o módulo.
+
+As entradas apresentadas podem ser utilizadas então para alimentar um algoritmo ou modelo de aprendizagem que estuda a probabilidade de haver um risco. Dado as entradas, o modelo deve apresentar como resultado um vetor de probabilidades de riscos, sendo cada posição do vetor a probabilidade de um ativo em específico estar em risco. O \acrshort{MGR} pode ser customizado, e o modelo é deixado a escolha do usuário. As informações geradas são posteriormente utilizadas como uma das entradas do \acrshort{MAR}.
+
+Neste trabalho, o \acrshort{MGR} é modelado como uma função predefinida, não utilizando modelos de aprendizagem de máquina. A abordagem sintética criada é demonstrada na \refFig{fig:mgr}. O Hare utiliza, para este trabalho, o volume de consultas da razão social de um ativo no \emph{Google Trends}, não considerando as entradas propostas de notícias e relatórios. Os dados utilizados do \emph{Google Trends} são fornecidos em valores semanais de interesse do termo desejado. Tal valor vem como um valor inteiro de $0$ a $100$, onde $0$ representa nenhum interesse e $100$ representa um interesse extremo. O modelo sintético implementado, da \refFig{fig:mgr}, usa um valor limite escolhido pelo usuário. Quando o interesse de pesquisa é abaixo desse valor, o modelo não acusa um risco no ativo, quando o interesse é maior um risco é indicado. A escolha dessa abordagem parte da premissa que todo aumento de pesquisa indica um risco no ativo. Essa premissa pode não ser necessariamente verdadeira, o que pode inserir um ruído no \acrfull{MAR}. Soluções de análise de riscos mais otimizadas serão consideradas em trabalhos futuros. 
+
+
+\figura[htbp]{img/mgr.pdf}{Visão Geral do \acrlong{MGR}. O modelo preditor escolhido pode ser alterado por qualquer modelo de aprendizagem desejado}{fig:mgr}{width=0.7\linewidth}%
+
+
+
+\section{Módulo do Agente}
+\label{SEC:AGENT}
+
+O Hare utiliza uma estrutura baseada em agentes, na qual cada agente pode ser visto como um investidor em ações, que tem como objetivo maximizar lucro e reduzir riscos, realizando decisões no portfólio do usuário. Por agente entende-se como uma entidade computacional capaz de perceber o meio por sensores e agir de forma autônoma sobre esse por meio de atuadores~\cite{modern_approach}. O núcleo de funcionamento do Hare é baseado em um agente que percebe o ambiente (o mercado de ações escolhido), pelas informações de seus ativos, e age neste ambiente de forma racional. 
+
+O agente possui uma conta, em que seu dinheiro não alocado em recursos financeiros é guardado, e um portfólio, um conjunto de diferentes ativos escolhidos pelo usuário do serviço, no qual o agente investe seu dinheiro disponível em sua conta. Um agente considerado racional, é aquele que busca maximizar o valor no seu portfólio e minimizar o dinheiro desalocado em sua conta, em outras palavras buscar o investimento com maior rentabilidade. A racionalidade do agente é definida pelo \acrlong{MAR}.
+
+\subsection{Modelo de Alocação de Recursos}
+
+Um agente que busca o investimento com maior rentabilidade utiliza o \acrfull{MAR}, como visto na \refFig{fig:hare}. O \acrshort{MAR} recebe como entrada, informações do movimento das ações, providenciadas pelo \acrlong{MPM}, e informações providenciadas pelo \acrshort{MGR}. A saída é então dada como um vetor de porcentagens (revisite a \refFig{fig:hare}), sendo cada elemento do vetor respectivo a um ativo.
+
+A implementação do \acrshort{MAR} no Hare foi baseada no \acrshort{DDPG}, como apresentado na \refFig{fig:mar}. Portanto, utilizou-se a biblioteca \emph{Spinning Up} da \textit{OpenAI}, que oferece suporte aos algoritmos de aprendizagem por reforço implementados. O \acrshort{DDPG} foi escolhido por ser livre de modelo, fora de política, e ator-crítico que utiliza aproximação de funções profundas para aprender políticas em espaços de ações contínuos de altas dimensões \cite{ddpg}. O algoritmo tem em sua base o gradiente de política determinista proposto por \textcite{silver2014deterministic}, combinado com ideias de sucesso do \textit{Deep Q Network} de \textcite{mnih2013playing}. Nota-se que este algoritmo e o aprendizado por reforço são estratégias viáveis ao problema, dado que o programador não precisa definir as melhores ações a serem realizadas, e o algoritmo aprenderá a comprar, esperar ou vender, por meio de sua própria exploração.
+
+\figura[htbp]{img/mar.pdf}{Visão Geral do \acrlong{MAR}. O modelo preditor escolhido pode ser alterado por qualquer modelo de aprendizagem desejado}{fig:mar}{width=0.8\linewidth}%
+
+No entanto, algoritmos de aprendizagem por reforço possuem características base intrínseca ao funcionamento do modelo, dentre essas, as que precisam ser definidas são: espaço de estados, espaço de ações e recompensa. Quando se define essas características, pode-se dizer que foi criado um ambiente de aprendizagem na qual o agente vai interagir. O agente realizará uma ação $a_t$ dentro do espaço de ações do ambiente, e receberá um estado $s_t$ e uma recompensa $r_t$ pela ação realizada. A \refFig{fig:mar} apresenta como é realizada a interação do agente com o ambiente desenvolvido, bem como as ferramentas utilizadas. A criação deste ambiente foi realizada com a biblioteca \textit{Gym} da \textit{OpenAI}, que fornece um conjunto de ferramentas para desenvolver e comparar algoritmos de aprendizado por reforço.
+
+\subsubsection{O Ambiente da B3}
+
+Utilizando o \emph{Gym}, desenvolveu-se então um ambiente simulado da bolsa de valores, no qual o agente do Hare interage. Este ambiente tem como propósito treinar e testar o modelo do \acrshort{DDPG} no \acrshort{MAR}. Como supracitado, o ambiente precisa ter um espaço de estado, um espaço de ações e uma função de recompensa, os quais são definidos a seguir:
+
+\begin{itemize}
+    \item O \textbf{Espaço de Estado} foi desenvolvido pensando nas variáveis do agente, junto com os valores de entrada do \acrshort{MAR}. Portanto, o espaço contém a quantidade de dinheiro que o agente tem desalocado, e o quanto seu portfólio está rendendo em relação ao dinheiro inicial, como variáveis do agente. Complementando também o espaço, informações do \acrshort{MPM} e do \acrshort{MGR} são adicionadas. Para cada ativo no portfólio, há a possibilidade de conter a predição, preço, lucro ou prejuízo do ativo, quantidade de ativos na carteira, e risco do ativo no tempo $t$. É dito que há a possibilidade, pois o ambiente foi programado de forma modular para permitir a experimentação com diversas modificações do espaço de estado.
+    
+    \item O \textbf{Espaço de Ações}, assume a forma definida pela \refEq{espaco_acao}. Onde cada elemento $a_{i,t}$ representa a ação que o agente deve fazer para o ativo $i$ no tempo $t$
+
+    \equacao{espaco_acao}{
+        A_t = [a_{0,t}, \ldots, a_{n,t}]
+    }
+    
+    O valor de uma ação $a_{i,t}$ foi definido entre o intervalo de $[-1, 1]$, onde: entre $[-1, 0)$ representa uma porcentagem do dinheiro em conta que será alocado na compra do ativo; $0$ representa uma espera; e $(0, 1]$ a venda de todas as posições que o agente possui do ativo.
+    
+    \item A \textbf{Recompensa} é atribuída para cada uma das possíveis ações realizadas pelo agente. Com o propósito de experimentar diversos cenários para aprimorar o aprendizado do \acrshort{DDPG}, implementou-se as seguintes recompensas:
+        
+        \begin{enumerate}
+            \item \textbf{Ação de Venda Lucrativa:} Recompensa relativa ao ganho na venda realizada. Para cada passo de tempo $t$, calcula-se quanto foi ganho na venda daquele ativo em relação ao preço comprado.
+            \item \textbf{Ação de Espera Lucrativa:} Diferença da quantidade de dinheiro na carteira no tempo $t$ em relação a quantidade inicial.
+            \item \textbf{Ação de Compra:} Recompensa constante negativa.
+            \item \textbf{Ações Indisponíveis ou Prejudiciais:} Recompensa negativa atribuída toda vez que o agente falha ao realizar uma ação selecionada. Essa recompensa leva em consideração a posição do agente no tempo da simulação, quanto mais para o fim dos seis meses, maior vai ser seu valor.
+            \item \textbf{Fim do Episódio:} Diferença final da quantidade de dinheiro na carteira em relação a quantidade inicial.
+        \end{enumerate}
+    
+    Juntando todas essas recompensas, podemos descrever a recompensa final para o passo $t$. Para cada ativo no portfólio o agente receberá a recompensa respectiva a ação realizada para aquele ativo. No final, o valor é dividido por uma constante $c$, evitando recompensas muito grande e facilitando os ajustes no modelo. No final do episódio, a diferença da quantidade de dinheiro final com a quantidade inicial é atribuída como recompensa final da simulação, indicando se houve um lucro ou uma perda naquele período.
+    
+\end{itemize}
+
+
+\section{Considerações Finais}
+
+% Este capítulo propôs o Hare, um serviço autônomos de investimentos para negociar na bolsa de valores. 
+
+Neste capítulo, foi apresentado um serviço autônomo de investimentos para negociar na bolsa de valores, nomeado de Hare. Para isto, o Hare se favorece do uso de séries temporais de dados históricos de ativos, bem como o seu volume de consulta no \textit{Google Trends} para prever e gerenciar o risco de tais ativos. Esses fatores servem como entrada para a inteligência baseada em um agente racional do Hare, que busca maximizar a rentabilidade de um portfólio.
+
+Resta-se então, avaliar o desempenho do Hare através de métricas e resultados. Os métodos de experimentação para a avaliação de desempenho são descritos no capítulo seguinte, bem como os resultados obtidos.
+

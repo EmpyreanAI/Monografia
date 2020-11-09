@@ -139,10 +139,11 @@
 %%
 
 \RequirePackage[style=numeric,sorting=none]{biblatex}
+\RequirePackage[utf8]{inputenc}%         Arquivos na codificação UTF-8
+\RequirePackage{csquotes}
 \addbibresource{bibliografia.bib}
 \RequirePackage[brazil,american]{babel}% Idiomas
-% \RequirePackage[fixlanguage]{babelbib}%  Idioma das referências
-\RequirePackage[utf8]{inputenc}%         Arquivos na codificação UTF-8
+
 \RequirePackage[T1]{fontenc}%            Habilita busca com caracteres latinos
 \RequirePackage{lmodern}%                Habilita busca com caracteres latinos
 \RequirePackage{amsmath}%				 Ambiente para equações
@@ -153,7 +154,7 @@
 \@ifundefined{XeTeXversion}{%
 	\PassOptionsToPackage{pdftex}{hyperref}
 
-	\RequirePackage{fixltx2e} %resolve defeitos do LaTeX
+% 	\RequirePackage{fixltx2e} %resolve defeitos do LaTeX
 	\RequirePackage{relsize} %utilizada no \@logo
 	\def\@textscale#1#2{\textscale{#1}{#2}}
 }{
@@ -178,11 +179,10 @@
 \fi
     
 \usepackage[acronym,nonumberlist]{glossaries}% Após o hyperref!
-
 \makeglossaries%
 
-\usepackage[tocindentauto]{tocstyle}% Indentação de anexos na TOC
-\usetocstyle{standard}%
+% \usepackage[tocindentauto]{tocstyle}% Indentação de anexos na TOC
+% \usetocstyle{standard}%
 
 %para gerar o label {TotPaginas}
 \RequirePackage{atbegshi}
@@ -559,7 +559,7 @@
 
 \renewenvironment{abstract}
 	{\begin{paginatitulo}%
-	\begin{otherlanguage*}{english}
+	\begin{otherlanguage*}{american}
 	\pdfbookmark{Abstract}{abstract}%
 		\chapter*{Abstract}}%
 		{\vskip 15pt\noindent\textbf{Keywords:}\ \@@keywords%
@@ -890,6 +890,11 @@
 	\printglossary[type=\acronymtype]%
 }%
 
+\newcommand{\@listofsimbols}{%
+	\@inputTeXFile{simbolos}%
+}%
+
+
 \newcommand{\@conteudoPreTextual}{%
 	\maketitle%
 	\if@qualificacao\else%
@@ -910,6 +915,7 @@
 	\iftotalfigures\listoffigures\fi%
 	\iftotaltables\listoftables\fi%
 	\@listofacronyms%
+% 	\@listofsimbols%
 	
 	\textual%
 }%
@@ -924,6 +930,9 @@
 
 
 \newcommand{\sigla}[2]{\newacronym{#1}{#1}{#2}}%
+% \newcommand{\sigla}[2]{\newacronym{#1}{#1}{#2}}%
+
+
 
 \newcommand{\@referencia}[2]{#1~\ref{#2}}%
 \newcommand{\refCap}[1]{\@referencia{Capítulo}{#1}}%
@@ -968,9 +977,26 @@
 	\end{table}%
 }%
 
+
+
 \newcommand{\tabela}[4]{%
 	\tabelaBib{#1}{}{#2}{#3}{#4}%
 }%
 
+\newcommand{\tabelaBibBig}[5]{%
+	\begin{table}%
+		\centering%
+    	\caption[#1.]{#1\ifx#2\empty\else~(Fonte: ~\cite{#2})\fi.\label{#3}}%
+    	\resizebox{.99\textwidth}{!} {
+    		\begin{tabular}{#4}%
+    			#5
+    		\end{tabular}%
+		}
+	\end{table}%
+}%
+
+\newcommand{\tabelaBig}[4]{%
+	\tabelaBibBig{#1}{}{#2}{#3}{#4}%
+}%
 
 \endinput
